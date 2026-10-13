@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nueva Especie | Catálogo Micológico</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/navegacion.css">
+    <link rel="stylesheet" href="../css/formularios.css">
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="container nav-container">
+
+        <a href="../index.html" class="logo">
+            Catálogo Micológico
+        </a>
+
+        <nav class="main-nav">
+
+            <a
+                href="../index.html"
+                data-nav
+            >
+                Inicio
+            </a>
+
+            <a
+                href="catalogo.html"
+                data-nav
+            >
+                Catálogo
+            </a>
+
+            <a
+                href="investigador.html"
+                data-nav
+                data-auth-link
+                data-auth-label="true"
+            >
+                Panel
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <section class="page-header">
+
+        <div class="container">
+
+            <a
+                href="investigador.html"
+                class="back-link"
+            >
+                ← Volver al panel
+            </a>
+
+            <h1>
+                Registrar nueva especie
+            </h1>
+
+            <p>
+                La información será enviada a revisión antes de aparecer
+                públicamente en el catálogo.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="container">
+
+            <form
+                id="species-form"
+                class="form-card"
+            >
+
+                <h2>
+                    Información taxonómica
+                </h2>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="nombre-cientifico">
+                            Nombre científico *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre-cientifico"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="nombre-comun">
+                            Nombre común
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre-comun"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="reino">
+                            Reino
+                        </label>
+
+                        <input
+                            type="text"
+                            id="reino"
+                            value="Fungi"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="phylum">
+                            Phylum
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phylum"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="clase">
+                            Clase
+                        </label>
+
+                        <input
+                            type="text"
+                            id="clase"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="orden">
+                            Orden
+                        </label>
+
+                        <input
+                            type="text"
+                            id="orden"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="familia">
+                            Familia
+                        </label>
+
+                        <input
+                            type="text"
+                            id="familia"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="genero">
+                            Género
+                        </label>
+
+                        <input
+                            type="text"
+                            id="genero"
+                        >
+                    </div>
+
+                </div>
+
+
+                <h2>
+                    Descripción científica
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="descripcion"
+                        rows="6"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="caracteristicas">
+                        Características
+                    </label>
+
+                    <textarea
+                        id="caracteristicas"
+                        rows="6"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="habitat">
+                        Hábitat
+                    </label>
+
+                    <textarea
+                        id="habitat"
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="distribucion">
+                        Distribución
+                    </label>
+
+                    <textarea
+                        id="distribucion"
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+                <h2>
+                    Registro de campo
+                </h2>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="fecha-registro">
+                            Fecha de registro
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fecha-registro"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="lugar-registro">
+                            Lugar de registro
+                        </label>
+
+                        <input
+                            type="text"
+                            id="lugar-registro"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <h2>
+                    Material multimedia
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label for="imagenes">
+                        Fotografías
+                    </label>
+
+                    <input
+                        type="file"
+                        id="imagenes"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                    >
+
+                    <small>
+                        Puedes seleccionar varias fotografías.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="modelo3d">
+                        Modelo 3D
+                    </label>
+
+                    <input
+                        type="file"
+                        id="modelo3d"
+                        accept=".glb,.gltf"
+                    >
+
+                    <small>
+                        Se recomienda utilizar archivos GLB.
+                    </small>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Enviar a revisión
+                </button>
+
+
+                <p
+                    id="species-form-message"
+                    class="form-message"
+                ></p>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+    <div class="container">
+        <p>
+            © <span data-year></span> Catálogo Micológico
+        </p>
+    </div>
+</footer>
+
+
+<script type="module" src="../js/app.js"></script>
+<script type="module" src="../js/investigador/nueva-especie.js"></script>
+
+</body>
+</html>

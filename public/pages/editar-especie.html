@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Corregir especie | Catálogo Micológico
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="../css/global.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/navegacion.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/formularios.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/investigador.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/visor3d.css"
+    >
+
+
+    <script
+        type="module"
+        src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+
+</head>
+
+
+<body>
+
+
+<header class="site-header">
+
+    <div class="container nav-container">
+
+        <a
+            href="../index.html"
+            class="logo"
+        >
+            Catálogo Micológico
+        </a>
+
+
+        <nav class="main-nav">
+
+            <a
+                href="../index.html"
+                data-nav
+            >
+                Inicio
+            </a>
+
+            <a
+                href="catalogo.html"
+                data-nav
+            >
+                Catálogo
+            </a>
+
+            <a
+                href="investigador.html"
+                data-nav
+                data-auth-link
+                data-auth-label="true"
+            >
+                Panel
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <section class="page-header">
+
+        <div class="container">
+
+            <a
+                href="mis-registros.html"
+                class="back-link"
+            >
+                ← Volver a mis registros
+            </a>
+
+
+            <p class="eyebrow">
+                Corrección
+            </p>
+
+
+            <h1>
+                Corregir registro
+            </h1>
+
+
+            <p>
+                Realiza los ajustes solicitados por el revisor
+                y vuelve a enviar el registro.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="container">
+
+            <div
+                id="nota-revision"
+                class="correction-note"
+            >
+                Cargando observaciones...
+            </div>
+
+
+            <form
+                id="edit-species-form"
+                class="form-card"
+            >
+
+                <h2>
+                    Información taxonómica
+                </h2>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="nombre-cientifico">
+                            Nombre científico *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre-cientifico"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="nombre-comun">
+                            Nombre común
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre-comun"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="reino">
+                            Reino
+                        </label>
+
+                        <input
+                            type="text"
+                            id="reino"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="phylum">
+                            Phylum
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phylum"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="clase">
+                            Clase
+                        </label>
+
+                        <input
+                            type="text"
+                            id="clase"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="orden">
+                            Orden
+                        </label>
+
+                        <input
+                            type="text"
+                            id="orden"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="familia">
+                            Familia
+                        </label>
+
+                        <input
+                            type="text"
+                            id="familia"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="genero">
+                            Género
+                        </label>
+
+                        <input
+                            type="text"
+                            id="genero"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <h2>
+                    Descripción científica
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="descripcion"
+                        rows="6"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="caracteristicas">
+                        Características
+                    </label>
+
+                    <textarea
+                        id="caracteristicas"
+                        rows="6"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="habitat">
+                        Hábitat
+                    </label>
+
+                    <textarea
+                        id="habitat"
+                        rows="5"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="distribucion">
+                        Distribución
+                    </label>
+
+                    <textarea
+                        id="distribucion"
+                        rows="5"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="fecha-registro">
+                            Fecha de registro
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fecha-registro"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="lugar-registro">
+                            Lugar de registro
+                        </label>
+
+                        <input
+                            type="text"
+                            id="lugar-registro"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <h2>
+                    Fotografías actuales
+                </h2>
+
+
+                <div
+                    id="imagenes-existentes"
+                    class="edit-image-gallery"
+                ></div>
+
+
+                <div class="form-group">
+
+                    <label for="imagenes-nuevas">
+                        Agregar fotografías
+                    </label>
+
+                    <input
+                        type="file"
+                        id="imagenes-nuevas"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                    >
+
+                </div>
+
+
+                <h2>
+                    Modelo 3D
+                </h2>
+
+
+                <div
+                    id="modelo-existente"
+                    class="edit-model-container"
+                ></div>
+
+
+                <div class="form-group">
+
+                    <label for="modelo3d-nuevo">
+                        Sustituir modelo 3D
+                    </label>
+
+                    <input
+                        type="file"
+                        id="modelo3d-nuevo"
+                        accept=".glb,.gltf"
+                    >
+
+                </div>
+
+
+                <div
+                    id="edit-message"
+                    class="form-message"
+                ></div>
+
+
+                <div class="review-actions">
+
+                    <button
+                        type="button"
+                        id="guardar-correcciones"
+                        class="btn btn-secondary"
+                    >
+                        Guardar correcciones
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="reenviar-revision"
+                        class="btn btn-primary"
+                    >
+                        Guardar y reenviar a revisión
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="container">
+
+        <p>
+            © <span data-year></span>
+            Catálogo Micológico
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script
+    type="module"
+    src="../js/app.js"
+></script>
+
+
+<script
+    type="module"
+    src="../js/investigador/editar-especie.js"
+></script>
+
+
+</body>
+
+</html>

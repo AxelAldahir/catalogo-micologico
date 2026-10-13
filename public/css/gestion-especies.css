@@ -1,0 +1,143 @@
+.management-summary {
+    margin-bottom: 2rem;
+}
+
+
+.management-list {
+    display: grid;
+    gap: 1rem;
+}
+
+
+.management-card {
+    display: grid;
+
+    gap: 1rem;
+
+    padding: 1.5rem;
+
+    background: var(--superficie);
+
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+}
+
+
+.management-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 1rem;
+}
+
+
+.management-card h2 {
+    font-size: 1.5rem;
+}
+
+
+.management-taxonomy {
+    margin-top: 0.4rem;
+
+    font-size: 0.95rem;
+}
+
+
+.management-status {
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 0.35rem 0.75rem;
+
+    border-radius: 999px;
+
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+
+.management-status.is-published {
+    background: var(--verde-claro);
+    color: var(--verde);
+}
+
+
+.management-status.is-withdrawn {
+    background: var(--peligro-claro);
+    color: var(--peligro);
+}
+
+
+.withdrawal-info {
+    padding: 1rem;
+
+    background: var(--peligro-claro);
+
+    border: 1px solid rgba(140, 48, 41, 0.18);
+    border-radius: 10px;
+}
+
+
+.withdrawal-info p + p {
+    margin-top: 0.4rem;
+}
+
+
+#retiro-dialog {
+    width: min(600px, calc(100% - 2rem));
+    max-height: calc(100vh - 2rem);
+
+    padding: 0;
+
+    overflow: auto;
+
+    border: 0;
+    border-radius: var(--radio);
+
+    background: transparent;
+}
+
+
+#retiro-dialog::backdrop {
+    background: rgba(20, 24, 20, 0.62);
+    backdrop-filter: blur(2px);
+}
+
+
+#retiro-dialog .form-card {
+    width: 100%;
+    margin: 0;
+
+    border: 0;
+}
+
+
+#retiro-dialog .form-card > h2:first-of-type {
+    margin-top: 0.6rem;
+}
+
+
+#retiro-dialog textarea {
+    min-height: 130px;
+}
+
+
+#gestion-message {
+    margin-bottom: 1rem;
+}
+
+
+@media (max-width: 600px) {
+
+    .management-card-header {
+        flex-direction: column;
+    }
+
+    #retiro-dialog {
+        width: calc(100% - 1rem);
+    }
+
+}

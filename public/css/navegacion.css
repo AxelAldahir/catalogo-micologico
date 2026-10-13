@@ -1,0 +1,78 @@
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    background: rgba(251, 250, 246, 0.95);
+
+    border-bottom: 1px solid var(--linea);
+
+    backdrop-filter: blur(12px);
+}
+
+
+.nav-container {
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 2rem;
+}
+
+
+.logo {
+    color: var(--verde);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+
+.main-nav {
+    display: flex;
+    align-items: center;
+
+    gap: 1.5rem;
+}
+
+
+.main-nav a {
+    color: var(--texto-secundario);
+
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+
+.main-nav a:hover,
+.main-nav a.activo {
+    color: var(--verde);
+}
+
+
+@media (max-width: 650px) {
+
+    .nav-container {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        padding: 1rem 0;
+    }
+
+    .main-nav {
+        width: 100%;
+
+        justify-content: space-between;
+
+        gap: 0.7rem;
+    }
+
+}

@@ -1,0 +1,639 @@
+.status-box {
+    max-width: 700px;
+
+    margin-top: 1.5rem;
+    padding: 1rem 1.2rem;
+
+    background: var(--verde-claro);
+
+    border-radius: 10px;
+}
+
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 1.5rem;
+}
+
+
+.dashboard-card {
+    display: block;
+
+    padding: 2rem;
+
+    background: var(--superficie);
+
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+
+    box-shadow: var(--sombra);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 18px 36px rgba(32, 36, 30, 0.12);
+}
+
+
+.dashboard-card > span {
+    color: var(--acento);
+
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+
+.dashboard-card h2 {
+    margin-top: 1.5rem;
+
+    font-size: 1.6rem;
+}
+
+
+.dashboard-card p {
+    margin-top: 0.8rem;
+}
+
+
+.logout-container {
+    margin-top: 3rem;
+}
+
+
+.records-list,
+.review-list {
+    display: grid;
+
+    gap: 1rem;
+}
+
+
+.record-card,
+.review-card {
+    padding: 1.5rem;
+
+    background: var(--superficie);
+
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+}
+
+
+.record-card h2,
+.review-card h2 {
+    font-size: 1.5rem;
+}
+
+
+.record-status {
+    display: inline-block;
+
+    margin-top: 0.8rem;
+    padding: 0.3rem 0.7rem;
+
+    border-radius: 999px;
+
+    background: var(--verde-claro);
+
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+
+.review-card {
+    display: grid;
+
+    gap: 1rem;
+}
+
+
+.review-card textarea {
+    width: 100%;
+
+    min-height: 120px;
+
+    padding: 0.8rem;
+
+    border: 1px solid var(--linea);
+    border-radius: 8px;
+
+    font: inherit;
+}
+
+
+.review-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.7rem;
+}
+
+
+.review-actions button {
+    border: 0;
+}
+
+
+.btn-approve {
+    background: var(--verde);
+    color: var(--blanco);
+}
+
+
+.btn-reject {
+    background: #8c3029;
+    color: var(--blanco);
+}
+
+
+@media (max-width: 850px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+#retiro-dialog {
+    width: min(600px, calc(100% - 2rem));
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+}
+
+#retiro-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#retiro-dialog .form-card {
+    margin: 0;
+    width: 100%;
+}
+
+#retiro-dialog textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+.review-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* =========================================================
+   REVISIÓN DE ESPECIES
+========================================================= */
+
+.review-header {
+    padding-bottom: 1rem;
+
+    border-bottom: 1px solid var(--linea);
+}
+
+
+.review-taxonomy {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 1rem;
+
+    padding: 1rem;
+
+    background: var(--verde-claro);
+
+    border-radius: 10px;
+}
+
+
+.review-taxonomy span,
+.review-record-data span {
+    display: block;
+
+    margin-bottom: 0.2rem;
+
+    color: var(--texto-secundario);
+
+    font-size: 0.8rem;
+}
+
+
+.review-record-data {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 1rem;
+}
+
+
+.review-images-section {
+    margin-top: 0.5rem;
+}
+
+
+.review-image-gallery {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(180px, 1fr)
+        );
+
+    gap: 1rem;
+
+    margin-top: 1rem;
+}
+
+
+.review-image-item {
+    overflow: hidden;
+
+    background: var(--fondo);
+
+    border: 1px solid var(--linea);
+    border-radius: 10px;
+}
+
+
+.review-image-item img {
+    display: block;
+
+    width: 100%;
+    height: 180px;
+
+    object-fit: cover;
+
+    cursor: zoom-in;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.review-image-item img:hover {
+    transform: scale(1.03);
+}
+
+
+.review-image-item figcaption {
+    padding: 0.7rem;
+
+    color: var(--texto-secundario);
+
+    font-size: 0.8rem;
+
+    overflow-wrap: anywhere;
+}
+
+
+.review-no-images {
+    margin-top: 0.8rem;
+
+    padding: 1rem;
+
+    border: 1px dashed var(--linea);
+    border-radius: 10px;
+}
+
+
+.review-comment-label {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    font-weight: 700;
+}
+
+
+@media (max-width: 750px) {
+
+    .review-taxonomy {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .review-record-data {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .review-taxonomy {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .review-image-gallery {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .review-image-item img {
+        height: 240px;
+    }
+
+}
+
+/* =========================================================
+   MODELO 3D EN REVISIÓN
+========================================================= */
+
+.review-model-section {
+    margin-top: 0.5rem;
+}
+
+
+.review-model-viewer {
+    position: relative;
+
+    width: 100%;
+    min-height: 420px;
+
+    margin-top: 1rem;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--verde-claro),
+            var(--superficie)
+        );
+
+    border: 1px solid var(--linea);
+    border-radius: 12px;
+}
+
+
+.review-model-viewer model-viewer {
+    display: block;
+
+    width: 100%;
+    height: 420px;
+
+    background: transparent;
+}
+
+
+.review-model-viewer > p {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 200px;
+
+    padding: 2rem;
+
+    color: var(--texto-secundario);
+
+    text-align: center;
+}
+
+
+.review-model-info {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    padding: 0.8rem 1rem;
+
+    background: var(--superficie);
+
+    border-top: 1px solid var(--linea);
+
+    font-size: 0.85rem;
+}
+
+
+.review-model-info span {
+    color: var(--texto-secundario);
+}
+
+
+.review-model-info strong {
+    color: var(--texto);
+}
+
+
+.review-no-model {
+    min-height: auto !important;
+
+    margin: 0;
+
+    border: 1px dashed var(--linea);
+}
+
+
+@media (max-width: 600px) {
+
+    .review-model-viewer {
+        min-height: 320px;
+    }
+
+
+    .review-model-viewer model-viewer {
+        height: 320px;
+    }
+
+}
+
+/* =========================================================
+   CORRECCIONES DE REGISTROS
+========================================================= */
+
+.record-status-rejected {
+    background: var(--peligro-claro);
+    color: var(--peligro);
+}
+
+
+.record-review-note {
+    margin-top: 1rem;
+
+    padding: 1rem 1.2rem;
+
+    background: var(--peligro-claro);
+
+    border-left:
+        4px solid var(--peligro);
+
+    border-radius: 8px;
+}
+
+
+.record-review-note strong {
+    color: var(--peligro);
+}
+
+
+.record-review-note p {
+    margin-top: 0.5rem;
+}
+
+
+.record-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.8rem;
+
+    margin-top: 1rem;
+}
+
+.correction-note {
+    margin-bottom: 2rem;
+    padding: 1.2rem;
+
+    background: var(--peligro-claro);
+
+    border-left:
+        4px solid var(--peligro);
+
+    border-radius: 10px;
+}
+
+
+.correction-note p {
+    margin-top: 0.6rem;
+}
+
+
+.edit-image-gallery {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(180px, 1fr)
+        );
+
+    gap: 1rem;
+
+    margin: 1rem 0 2rem;
+}
+
+
+.edit-image-card {
+    overflow: hidden;
+
+    border:
+        1px solid var(--linea);
+
+    border-radius:
+        10px;
+}
+
+
+.edit-image-card img {
+    display: block;
+
+    width: 100%;
+    height: 180px;
+
+    object-fit: cover;
+}
+
+
+.edit-image-card button {
+    width: 100%;
+
+    border-radius: 0;
+}
+
+
+.edit-model-container {
+    margin: 1rem 0 2rem;
+}
+
+/* =========================================================
+   EDICIÓN DE MODELO 3D
+========================================================= */
+
+.edit-model-container {
+    display: grid;
+
+    gap: 1rem;
+
+    margin: 1rem 0 2rem;
+}
+
+
+.edit-model-viewer {
+    width: 100%;
+
+    min-height: 420px;
+}
+
+
+.edit-model-viewer model-viewer {
+    width: 100%;
+    height: 420px;
+}
+
+
+.edit-model-info {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.8rem 1.5rem;
+
+    padding: 1rem;
+
+    background:
+        var(--verde-claro);
+
+    border-radius:
+        8px;
+
+    font-size:
+        0.9rem;
+}
+
+
+.edit-model-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.8rem;
+}
+
+
+@media (max-width: 600px) {
+
+    .edit-model-viewer {
+        min-height: 320px;
+    }
+
+
+    .edit-model-viewer model-viewer {
+        height: 320px;
+    }
+
+}

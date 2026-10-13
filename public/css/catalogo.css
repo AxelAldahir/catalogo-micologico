@@ -1,0 +1,143 @@
+.catalog-search {
+    max-width: 700px;
+    margin-bottom: 3rem;
+}
+
+
+.catalog-search label {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    font-weight: 700;
+}
+
+
+.catalog-search input {
+    width: 100%;
+
+    padding: 1rem 1.1rem;
+
+    border: 1px solid var(--linea);
+    border-radius: 10px;
+
+    background: var(--superficie);
+
+    font: inherit;
+}
+
+
+.fungi-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 1.5rem;
+}
+
+
+.fungi-card {
+    overflow: hidden;
+
+    background: var(--superficie);
+
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+
+    box-shadow: var(--sombra);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.fungi-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 18px 36px rgba(32, 36, 30, 0.12);
+}
+
+
+.fungi-card-image {
+    width: 100%;
+    height: 230px;
+
+    object-fit: cover;
+
+    background: var(--verde-claro);
+}
+
+
+.fungi-card-content {
+    padding: 1.5rem;
+}
+
+
+.fungi-card-family {
+    margin-bottom: 0.4rem;
+
+    color: var(--acento);
+
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+.fungi-card h2 {
+    font-size: 1.5rem;
+}
+
+
+.fungi-card-common {
+    margin-top: 0.4rem;
+
+    font-style: italic;
+}
+
+
+.fungi-card-link {
+    display: inline-block;
+
+    margin-top: 1rem;
+
+    color: var(--verde);
+
+    font-weight: 700;
+}
+
+
+.catalog-message {
+    grid-column: 1 / -1;
+
+    padding: 2rem;
+
+    border: 1px dashed var(--linea);
+    border-radius: var(--radio);
+
+    text-align: center;
+}
+
+
+@media (max-width: 900px) {
+
+    .fungi-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .fungi-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

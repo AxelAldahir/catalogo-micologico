@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Acceso de Investigadores | Catálogo Micológico
+    </title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/navegacion.css">
+    <link rel="stylesheet" href="../css/formularios.css">
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="container nav-container">
+
+        <a href="../index.html" class="logo">
+            Catálogo Micológico
+        </a>
+
+        <nav class="main-nav">
+
+            <a
+                href="../index.html"
+                data-nav
+            >
+                Inicio
+            </a>
+
+            <a
+                href="catalogo.html"
+                data-nav
+            >
+                Catálogo
+            </a>
+
+            <a
+                href="login.html"
+                data-nav
+                data-auth-link
+                data-auth-label="true"
+            >
+                Investigadores
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <section class="section">
+
+        <div class="container narrow-container">
+
+            <div class="form-card">
+
+                <p class="eyebrow">
+                    Área privada
+                </p>
+
+                <h1>
+                    Acceso de investigadores
+                </h1>
+
+                <p>
+                    Inicia sesión para consultar tus registros
+                    o enviar nuevas especies al catálogo.
+                </p>
+
+
+                <form id="login-form">
+
+                    <div class="form-group">
+
+                        <label for="correo">
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            id="correo"
+                            required
+                            autocomplete="email"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            required
+                            autocomplete="current-password"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-full"
+                    >
+                        Iniciar sesión
+                    </button>
+
+
+                    <p
+                        id="login-message"
+                        class="form-message"
+                    ></p>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="container">
+
+        <p>
+            © <span data-year></span> Catálogo Micológico
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script
+    type="module"
+    src="../js/app.js"
+></script>
+
+<script
+    type="module"
+    src="../js/auth/login.js"
+></script>
+
+</body>
+</html>
