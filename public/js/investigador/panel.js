@@ -21,6 +21,10 @@ const revisionCard =
         "#revision-card"
     );
 
+const usersAdminCard =
+    document.querySelector(
+        "#users-admin-card"
+    );
 
 const gestionCard =
     document.querySelector(
@@ -65,6 +69,15 @@ async function iniciarPanel() {
     ) {
 
         revisionCard.classList.remove(
+            "hidden"
+        );
+    }
+
+    if (
+        perfil.rol === "admin"
+    ) {
+
+        usersAdminCard.classList.remove(
             "hidden"
         );
     }
