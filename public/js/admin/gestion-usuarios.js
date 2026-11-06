@@ -57,13 +57,24 @@ async function cargarUsuarios() {
         .from("profiles")
         .select(`
             id,
+            auth_user_id,
             nombre_completo,
             institucion,
             correo_institucional,
             rol,
             estado_verificacion,
+            cuenta_eliminada,
             fecha_registro
         `)
+        .eq(
+            "cuenta_eliminada",
+            false
+        )
+        .not(
+            "auth_user_id",
+            "is",
+            null
+        )
         .order(
             "fecha_registro",
             {
@@ -233,8 +244,13 @@ function renderizarUsuarios(usuarios) {
 
 function crearAcciones(perfil) {
 
+    /*
+     * El administrador actual no puede
+     * modificarse ni eliminarse a sí mismo.
+     */
     if (
-        perfil.id === usuarioActualId
+        perfil.id ===
+        usuarioActualId
     ) {
 
         return `
@@ -246,8 +262,9 @@ function crearAcciones(perfil) {
 
 
     /*
-     * Investigador pendiente o rechazado:
-     * permitir aprobación.
+     * INVESTIGADOR PENDIENTE O RECHAZADO
+     *
+     * Puede aprobarse o eliminarse.
      */
     if (
         perfil.rol === "investigador" &&
@@ -263,13 +280,24 @@ function crearAcciones(perfil) {
             >
                 Aprobar investigador
             </button>
+
+            <button
+                type="button"
+                class="btn btn-reject"
+                data-user-action="eliminar"
+                data-user-id="${perfil.id}"
+            >
+                Eliminar cuenta
+            </button>
         `;
     }
 
 
     /*
-     * Investigador verificado:
-     * permitir ascenso.
+     * INVESTIGADOR VERIFICADO
+     *
+     * Puede ascenderse a administrador
+     * o eliminarse.
      */
     if (
         perfil.rol === "investigador" &&
@@ -285,13 +313,25 @@ function crearAcciones(perfil) {
             >
                 Ascender a administrador
             </button>
+
+            <button
+                type="button"
+                class="btn btn-reject"
+                data-user-action="eliminar"
+                data-user-id="${perfil.id}"
+            >
+                Eliminar cuenta
+            </button>
         `;
     }
 
 
     /*
-     * Otro administrador:
-     * permitir degradación.
+     * ADMINISTRADOR
+     *
+     * Se puede degradar a investigador.
+     *
+     * No se elimina directamente desde aquí.
      */
     if (
         perfil.rol === "admin"
@@ -311,7 +351,7 @@ function crearAcciones(perfil) {
 
 
     /*
-     * Los revisores se conservan sin cambios.
+     * REVISOR U OTRO CASO
      */
     return `
         <span class="user-current">
@@ -335,6 +375,25 @@ async function procesarAccion(event) {
         boton.dataset.userId;
 
 
+    /*
+     * ELIMINAR INVESTIGADOR
+     */
+    if (
+        accion === "eliminar"
+    ) {
+
+        await eliminarInvestigador(
+            usuarioId,
+            boton
+        );
+
+        return;
+    }
+
+
+    /*
+     * RESTO DE ACCIONES
+     */
     const mensajes = {
 
         aprobar:
@@ -350,15 +409,25 @@ async function procesarAccion(event) {
 
 
     if (
-        !window.confirm(
-            mensajes[accion]
-        )
+        !mensajes[accion]
     ) {
         return;
     }
 
 
-    boton.disabled = true;
+    const confirmado =
+        window.confirm(
+            mensajes[accion]
+        );
+
+
+    if (!confirmado) {
+        return;
+    }
+
+
+    boton.disabled =
+        true;
 
 
     mostrarMensaje(
@@ -384,13 +453,16 @@ async function procesarAccion(event) {
 
         console.error(error);
 
+
         mostrarMensaje(
             error.message ||
             "No fue posible actualizar el usuario.",
             true
         );
 
-        boton.disabled = false;
+
+        boton.disabled =
+            false;
 
         return;
     }
@@ -404,6 +476,140 @@ async function procesarAccion(event) {
     await cargarUsuarios();
 }
 
+async function eliminarInvestigador(
+    usuarioId,
+    boton
+) {
+
+    /*
+     * Primera confirmación.
+     */
+    const confirmar =
+        window.confirm(
+            "¿Deseas eliminar esta cuenta? Las especies, fotografías y modelos 3D registrados por este investigador se conservarán."
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    /*
+     * Segunda confirmación.
+     */
+    const confirmarDefinitivo =
+        window.confirm(
+            "El investigador perderá definitivamente el acceso al sistema. Esta acción no se puede deshacer. ¿Deseas continuar?"
+        );
+
+
+    if (!confirmarDefinitivo) {
+        return;
+    }
+
+
+    boton.disabled =
+        true;
+
+
+    mostrarMensaje(
+        "Eliminando cuenta y conservando sus registros..."
+    );
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabase.functions.invoke(
+            "eliminar-investigador",
+            {
+                body: {
+                    usuario_id:
+                        usuarioId
+                }
+            }
+        );
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+
+            mostrarMensaje(
+                "No fue posible eliminar la cuenta.",
+                true
+            );
+
+
+            boton.disabled =
+                false;
+
+            return;
+        }
+
+
+        /*
+         * La Edge Function puede devolver
+         * un mensaje de error propio.
+         */
+        if (
+            data?.error
+        ) {
+
+            mostrarMensaje(
+                data.error,
+                true
+            );
+
+
+            boton.disabled =
+                false;
+
+            return;
+        }
+
+
+        /*
+         * Eliminación correcta.
+         */
+        mostrarMensaje(
+            data?.mensaje ||
+            "Cuenta eliminada correctamente."
+        );
+
+
+        /*
+         * Volver a cargar usuarios.
+         *
+         * Como cuenta_eliminada ahora es true,
+         * el investigador desaparecerá de esta lista.
+         */
+        await cargarUsuarios();
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        mostrarMensaje(
+            "Ocurrió un error al eliminar la cuenta.",
+            true
+        );
+
+
+        boton.disabled =
+            false;
+    }
+}
 
 function textoRol(rol) {
 
