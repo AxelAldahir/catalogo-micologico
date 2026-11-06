@@ -14,6 +14,10 @@ const contenedor =
     );
 
 
+/* =========================================================
+   CARGAR REGISTROS DEL USUARIO
+========================================================= */
+
 async function cargarRegistros() {
 
     const acceso =
@@ -130,6 +134,10 @@ function renderizarRegistro(
         "record-card";
 
 
+    /* =====================================================
+       NOMBRE CIENTÍFICO
+    ===================================================== */
+
     const titulo =
         document.createElement(
             "h2"
@@ -144,6 +152,10 @@ function renderizarRegistro(
         titulo
     );
 
+
+    /* =====================================================
+       NOMBRE COMÚN
+    ===================================================== */
 
     if (
         especie.nombre_comun
@@ -164,6 +176,10 @@ function renderizarRegistro(
         );
     }
 
+
+    /* =====================================================
+       ESTADO
+    ===================================================== */
 
     const estado =
         document.createElement(
@@ -197,10 +213,13 @@ function renderizarRegistro(
     );
 
 
-    /*
-     * Si fue rechazado mostramos la nota
-     * más reciente del revisor.
-     */
+    /* =====================================================
+       OBSERVACIONES DEL REVISOR
+
+       Solo se muestran cuando el registro requiere
+       correcciones.
+    ===================================================== */
+
     if (
         especie.estado ===
         "rechazado"
@@ -256,7 +275,26 @@ function renderizarRegistro(
         card.appendChild(
             revision
         );
+    }
 
+
+    /* =====================================================
+       ACCIONES
+
+       Se permite editar:
+       - rechazado
+       - aprobado
+
+       No se permite editar:
+       - pendiente_revision
+       - retirado
+    ===================================================== */
+
+    if (
+        puedeEditarRegistro(
+            especie.estado
+        )
+    ) {
 
         const acciones =
             document.createElement(
@@ -282,8 +320,24 @@ function renderizarRegistro(
             `editar-especie.html?id=${especie.id}`;
 
 
-        editar.textContent =
-            "Corregir registro";
+        /*
+         * El texto cambia dependiendo
+         * del estado actual.
+         */
+        if (
+            especie.estado ===
+            "rechazado"
+        ) {
+
+            editar.textContent =
+                "Corregir registro";
+
+        } else {
+
+            editar.textContent =
+                "Editar registro";
+
+        }
 
 
         acciones.appendChild(
@@ -297,8 +351,81 @@ function renderizarRegistro(
     }
 
 
+    /* =====================================================
+       MENSAJE PARA REGISTROS EN REVISIÓN
+    ===================================================== */
+
+    if (
+        especie.estado ===
+        "pendiente_revision"
+    ) {
+
+        const informacion =
+            document.createElement(
+                "p"
+            );
+
+
+        informacion.className =
+            "record-info";
+
+
+        informacion.textContent =
+            "Este registro está siendo revisado y no puede editarse temporalmente.";
+
+
+        card.appendChild(
+            informacion
+        );
+    }
+
+
+    /* =====================================================
+       REGISTRO RETIRADO
+    ===================================================== */
+
+    if (
+        especie.estado ===
+        "retirado"
+    ) {
+
+        const informacion =
+            document.createElement(
+                "p"
+            );
+
+
+        informacion.className =
+            "record-info";
+
+
+        informacion.textContent =
+            "Este registro fue retirado del catálogo y no puede editarse.";
+
+
+        card.appendChild(
+            informacion
+        );
+    }
+
+
     contenedor.appendChild(
         card
+    );
+}
+
+
+/* =========================================================
+   COMPROBAR SI EL REGISTRO PUEDE EDITARSE
+========================================================= */
+
+function puedeEditarRegistro(
+    estado
+) {
+
+    return (
+        estado === "rechazado" ||
+        estado === "aprobado"
     );
 }
 
@@ -315,6 +442,7 @@ function obtenerUltimoRechazo(
         !notas ||
         notas.length === 0
     ) {
+
         return null;
     }
 
@@ -371,5 +499,9 @@ function textoEstado(
         estado;
 }
 
+
+/* =========================================================
+   INICIAR
+========================================================= */
 
 cargarRegistros();

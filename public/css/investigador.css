@@ -716,3 +716,38 @@
         justify-content: flex-start;
     }
 }
+
+.record-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.75rem;
+
+    margin-top: 1rem;
+}
+
+
+.record-info {
+    margin-top: 1rem;
+
+    font-size: 0.9rem;
+
+    opacity: 0.75;
+}
+
+
+.record-review-note {
+    margin-top: 1rem;
+    padding: 1rem;
+
+    border-left: 4px solid #8c3029;
+
+    background: rgba(140, 48, 41, 0.06);
+
+    border-radius: 6px;
+}
+
+
+.record-review-note p {
+    margin-top: 0.5rem;
+}

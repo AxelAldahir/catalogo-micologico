@@ -2,11 +2,9 @@ import {
     requiereRol
 } from "../auth/permisos.js";
 
-
 import {
     supabase
 } from "../database/supabase.js";
-
 
 import {
     mostrarModelo3D
@@ -18,51 +16,38 @@ const parametros =
         window.location.search
     );
 
-
 const especieId =
     parametros.get("id");
-
 
 const formulario =
     document.querySelector(
         "#edit-species-form"
     );
 
-
 const mensaje =
     document.querySelector(
         "#edit-message"
     );
-
 
 const notaRevision =
     document.querySelector(
         "#nota-revision"
     );
 
-
 const imagenesExistentes =
     document.querySelector(
         "#imagenes-existentes"
     );
-
 
 const modeloExistente =
     document.querySelector(
         "#modelo-existente"
     );
 
+const SIGNED_URL_TTL = 300;
 
-const SIGNED_URL_TTL =
-    300;
-
-
-let acceso =
-    null;
-
-
-let especieActual =
-    null;
+let acceso = null;
+let especieActual = null;
 
 
 /* =========================================================
@@ -71,23 +56,20 @@ let especieActual =
 
 async function iniciar() {
 
-    acceso =
-        await requiereRol([
-            "investigador",
-            "revisor",
-            "admin"
-        ]);
-
+    acceso = await requiereRol([
+        "investigador",
+        "revisor",
+        "admin"
+    ]);
 
     if (!acceso) {
         return;
     }
 
-
     if (!especieId) {
 
         mostrarMensaje(
-            "No se indicó qué especie debe corregirse.",
+            "No se indicó qué especie debe editarse.",
             true
         );
 
@@ -125,9 +107,12 @@ async function iniciar() {
             "investigador_id",
             acceso.usuario.id
         )
-        .eq(
+        .in(
             "estado",
-            "rechazado"
+            [
+                "rechazado",
+                "aprobado"
+            ]
         )
         .single();
 
@@ -138,7 +123,6 @@ async function iniciar() {
     ) {
 
         console.error(error);
-
 
         formulario.innerHTML = `
             <div class="catalog-message">
@@ -155,6 +139,8 @@ async function iniciar() {
 
 
     llenarFormulario();
+
+    configurarBotones();
 
 
     await Promise.all([
@@ -249,6 +235,32 @@ function llenarFormulario() {
 
 async function cargarNotas() {
 
+    if (!notaRevision) {
+        return;
+    }
+
+
+    notaRevision.innerHTML =
+        "";
+
+
+    /*
+     * Las observaciones solo aparecen
+     * cuando el registro fue rechazado.
+     */
+    if (
+        especieActual.estado !==
+        "rechazado"
+    ) {
+
+        notaRevision.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
     const {
         data,
         error
@@ -278,6 +290,10 @@ async function cargarNotas() {
         notaRevision.textContent =
             "No fue posible cargar las observaciones.";
 
+        notaRevision.classList.remove(
+            "hidden"
+        );
+
         return;
     }
 
@@ -288,10 +304,6 @@ async function cargarNotas() {
                 nota.estado ===
                 "rechazado"
         );
-
-
-    notaRevision.innerHTML =
-        "";
 
 
     const titulo =
@@ -318,6 +330,11 @@ async function cargarNotas() {
     notaRevision.append(
         titulo,
         texto
+    );
+
+
+    notaRevision.classList.remove(
+        "hidden"
     );
 }
 
@@ -360,6 +377,11 @@ async function urlFirmada(
 
 async function renderizarImagenes() {
 
+    if (!imagenesExistentes) {
+        return;
+    }
+
+
     imagenesExistentes.innerHTML =
         "";
 
@@ -380,8 +402,16 @@ async function renderizarImagenes() {
     }
 
 
+    const ordenadas =
+        [...imagenes].sort(
+            (a, b) =>
+                (a.orden ?? 0) -
+                (b.orden ?? 0)
+        );
+
+
     for (
-        const imagen of imagenes
+        const imagen of ordenadas
     ) {
 
         const url =
@@ -499,6 +529,7 @@ async function eliminarImagen(
             databaseError
         );
 
+
         mostrarMensaje(
             "No fue posible eliminar la fotografía.",
             true
@@ -522,7 +553,6 @@ async function eliminarImagen(
         console.error(
             storageError
         );
-
     }
 
 
@@ -538,12 +568,16 @@ async function eliminarImagen(
 }
 
 
-
 /* =========================================================
    MODELO 3D EXISTENTE
 ========================================================= */
 
 async function renderizarModelo() {
+
+    if (!modeloExistente) {
+        return;
+    }
+
 
     modeloExistente.innerHTML =
         "";
@@ -558,18 +592,18 @@ async function renderizarModelo() {
         modelos.length === 0
     ) {
 
-        const mensaje =
+        const texto =
             document.createElement(
                 "p"
             );
 
 
-        mensaje.textContent =
+        texto.textContent =
             "No hay modelo 3D registrado.";
 
 
         modeloExistente.appendChild(
-            mensaje
+            texto
         );
 
         return;
@@ -596,9 +630,6 @@ async function renderizarModelo() {
     }
 
 
-    /*
-     * El visor va dentro de su propio contenedor.
-     */
     const visor =
         document.createElement(
             "div"
@@ -620,9 +651,6 @@ async function renderizarModelo() {
     );
 
 
-    /*
-     * Información del modelo.
-     */
     const informacion =
         document.createElement(
             "div"
@@ -673,9 +701,6 @@ async function renderizarModelo() {
     );
 
 
-    /*
-     * Botón para eliminar el modelo sin sustituirlo.
-     */
     const acciones =
         document.createElement(
             "div"
@@ -720,17 +745,27 @@ async function renderizarModelo() {
     );
 }
 
+
 /* =========================================================
-   GUARDAR
+   GUARDAR Y REENVIAR A REVISIÓN
 ========================================================= */
 
-async function guardar(
-    reenviar
-) {
+async function guardar() {
 
     if (
         !formulario.reportValidity()
     ) {
+        return;
+    }
+
+
+    const confirmar =
+        window.confirm(
+            "Al guardar los cambios, el registro será enviado nuevamente a revisión. ¿Deseas continuar?"
+        );
+
+
+    if (!confirmar) {
         return;
     }
 
@@ -741,21 +776,26 @@ async function guardar(
 
 
     mostrarMensaje(
-        reenviar
-            ? "Guardando y reenviando..."
-            : "Guardando correcciones..."
+        "Guardando cambios y enviando a revisión..."
     );
 
 
-try {
+    try {
 
-    await subirNuevasImagenes();
+        /*
+         * Primero se procesan los archivos nuevos.
+         */
+        await subirNuevasImagenes();
 
 
-    await sustituirModeloSiCorresponde();
+        await sustituirModeloSiCorresponde();
 
 
-    const cambios = {
+        /*
+         * Después se actualiza la información
+         * principal de la especie.
+         */
+        const cambios = {
 
             nombre_cientifico:
                 valor(
@@ -768,26 +808,39 @@ try {
                 ),
 
             reino:
-                valor("reino") ||
-                "Fungi",
+                valor(
+                    "reino"
+                ) || "Fungi",
 
             phylum:
-                valor("phylum"),
+                valor(
+                    "phylum"
+                ),
 
             clase:
-                valor("clase"),
+                valor(
+                    "clase"
+                ),
 
             orden:
-                valor("orden"),
+                valor(
+                    "orden"
+                ),
 
             familia:
-                valor("familia"),
+                valor(
+                    "familia"
+                ),
 
             genero:
-                valor("genero"),
+                valor(
+                    "genero"
+                ),
 
             descripcion:
-                valor("descripcion"),
+                valor(
+                    "descripcion"
+                ),
 
             caracteristicas:
                 valor(
@@ -795,7 +848,9 @@ try {
                 ),
 
             habitat:
-                valor("habitat"),
+                valor(
+                    "habitat"
+                ),
 
             distribucion:
                 valor(
@@ -812,15 +867,17 @@ try {
                     "lugar-registro"
                 ),
 
+            /*
+             * IMPORTANTE:
+             * Cualquier edición vuelve a revisión.
+             */
             estado:
-                reenviar
-                    ? "pendiente_revision"
-                    : "rechazado"
-
+                "pendiente_revision"
         };
 
 
         const {
+            data,
             error
         } = await supabase
             .from("species")
@@ -830,7 +887,22 @@ try {
             .eq(
                 "id",
                 especieId
-            );
+            )
+            .eq(
+                "investigador_id",
+                acceso.usuario.id
+            )
+            .in(
+                "estado",
+                [
+                    "rechazado",
+                    "aprobado"
+                ]
+            )
+            .select(
+                "id"
+            )
+            .single();
 
 
         if (error) {
@@ -838,41 +910,32 @@ try {
         }
 
 
-        if (reenviar) {
+        if (!data) {
 
-            mostrarMensaje(
-                "El registro fue reenviado correctamente a revisión."
+            throw new Error(
+                "No fue posible actualizar el registro."
             );
-
-
-            setTimeout(
-                () => {
-
-                    window.location.href =
-                        "mis-registros.html";
-
-                },
-                1000
-            );
-
-
-            return;
         }
 
 
+        especieActual.estado =
+            "pendiente_revision";
+
+
         mostrarMensaje(
-            "Las correcciones fueron guardadas."
+            "Los cambios fueron guardados. El registro fue enviado nuevamente a revisión."
         );
 
 
-        document.querySelector(
-            "#imagenes-nuevas"
-        ).value = "";
+        setTimeout(
+            () => {
 
+                window.location.href =
+                    "mis-registros.html";
 
-        document.querySelector(
-            "#modelo3d-nuevo"
-        ).value = "";
+            },
+            1200
+        );
 
 
     } catch (error) {
@@ -883,9 +946,10 @@ try {
 
 
         mostrarMensaje(
-            "No fue posible guardar las correcciones.",
+            "No fue posible guardar y reenviar el registro.",
             true
         );
+
 
     } finally {
 
@@ -907,6 +971,11 @@ async function subirNuevasImagenes() {
         document.querySelector(
             "#imagenes-nuevas"
         );
+
+
+    if (!input) {
+        return;
+    }
 
 
     const archivos =
@@ -962,7 +1031,12 @@ async function subirNuevasImagenes() {
         }
 
 
+        /*
+         * Guardamos también la nueva imagen
+         * en la base de datos.
+         */
         const {
+            data: nuevaImagen,
             error: databaseError
         } = await supabase
             .from(
@@ -985,191 +1059,55 @@ async function subirNuevasImagenes() {
                 autor:
                     acceso.perfil.nombre_completo
 
-            });
+            })
+            .select(`
+                id,
+                ruta_archivo,
+                descripcion,
+                orden
+            `)
+            .single();
 
 
         if (databaseError) {
+
+            /*
+             * Si falla la base de datos,
+             * eliminamos el archivo que acabamos
+             * de subir para no dejarlo huérfano.
+             */
+            await supabase.storage
+                .from(
+                    "species-images"
+                )
+                .remove([
+                    ruta
+                ]);
+
+
             throw databaseError;
         }
-    }
-}
 
 
-/* =========================================================
-   VALIDACIONES
-========================================================= */
+        /*
+         * Actualizar copia local.
+         */
+        especieActual.species_images = [
 
-function validarImagen(
-    archivo
-) {
+            ...(
+                especieActual.species_images ||
+                []
+            ),
 
-    const permitidos = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-    ];
-
-
-    if (
-        !permitidos.includes(
-            archivo.type
-        )
-    ) {
-
-        throw new Error(
-            "Tipo de imagen no permitido."
-        );
+            nuevaImagen
+        ];
     }
 
 
-    if (
-        archivo.size >
-        10 * 1024 * 1024
-    ) {
-
-        throw new Error(
-            "Una imagen supera los 10 MB."
-        );
-    }
+    input.value =
+        "";
 }
 
-/* =========================================================
-   VALIDAR MODELO 3D
-========================================================= */
-
-function validarModelo(
-    archivo
-) {
-
-    const extension =
-        obtenerExtension(
-            archivo.name
-        );
-
-
-    if (
-        ![
-            "glb",
-            "gltf"
-        ].includes(
-            extension
-        )
-    ) {
-
-        throw new Error(
-            "El modelo debe ser un archivo GLB o GLTF."
-        );
-    }
-
-
-    const maximo =
-        100 * 1024 * 1024;
-
-
-    if (
-        archivo.size >
-        maximo
-    ) {
-
-        throw new Error(
-            "El modelo 3D supera los 100 MB."
-        );
-    }
-}
-
-
-function obtenerExtension(
-    nombre
-) {
-
-    return nombre
-        .split(".")
-        .pop()
-        .toLowerCase();
-}
-
-
-function valor(
-    id
-) {
-
-    return document
-        .querySelector(
-            `#${id}`
-        )
-        .value
-        .trim();
-}
-
-
-function asignar(
-    id,
-    valor
-) {
-
-    document
-        .querySelector(
-            `#${id}`
-        )
-        .value =
-            valor || "";
-}
-
-
-function mostrarMensaje(
-    texto,
-    error = false
-) {
-
-    mensaje.textContent =
-        texto;
-
-
-    mensaje.className =
-        error
-            ? "form-message error"
-            : "form-message success";
-}
-
-
-function bloquearBotones(
-    bloquear
-) {
-
-    document.querySelector(
-        "#guardar-correcciones"
-    ).disabled =
-        bloquear;
-
-
-    document.querySelector(
-        "#reenviar-revision"
-    ).disabled =
-        bloquear;
-}
-
-
-/* =========================================================
-   EVENTOS
-========================================================= */
-
-document.querySelector(
-    "#guardar-correcciones"
-).addEventListener(
-    "click",
-    () => guardar(false)
-);
-
-
-document.querySelector(
-    "#reenviar-revision"
-).addEventListener(
-    "click",
-    () => guardar(true)
-);
-
-
-iniciar();
 
 /* =========================================================
    SUSTITUIR MODELO 3D
@@ -1183,13 +1121,18 @@ async function sustituirModeloSiCorresponde() {
         );
 
 
+    if (!input) {
+        return;
+    }
+
+
     const archivo =
         input.files[0];
 
 
     /*
-     * Si no seleccionaron un modelo nuevo,
-     * no hacemos ningún cambio.
+     * Si no se seleccionó un nuevo modelo,
+     * no realizamos cambios.
      */
     if (!archivo) {
         return;
@@ -1216,7 +1159,7 @@ async function sustituirModeloSiCorresponde() {
 
 
     /* =====================================================
-       1. SUBIR NUEVO ARCHIVO
+       1. SUBIR NUEVO MODELO
     ===================================================== */
 
     const {
@@ -1241,14 +1184,12 @@ async function sustituirModeloSiCorresponde() {
 
 
     if (uploadError) {
-
         throw uploadError;
-
     }
 
 
     /* =====================================================
-       2. CREAR NUEVO REGISTRO
+       2. REGISTRAR NUEVO MODELO EN BASE DE DATOS
     ===================================================== */
 
     const {
@@ -1286,8 +1227,8 @@ async function sustituirModeloSiCorresponde() {
 
 
     /*
-     * Si falla la BD, quitamos el archivo que
-     * acabamos de subir para no dejarlo huérfano.
+     * Si falla la BD eliminamos el
+     * archivo recién subido.
      */
     if (insertError) {
 
@@ -1305,141 +1246,118 @@ async function sustituirModeloSiCorresponde() {
 
 
     /* =====================================================
-       3. GUARDAR MODELOS ANTERIORES
+       3. OBTENER MODELOS ANTERIORES
     ===================================================== */
 
-    const anteriores =
-        [
-            ...(
-                especieActual
-                    .species_models ||
-                []
-            )
-        ];
+    const anteriores = [
 
-
-    /*
-     * Si no había modelo anterior, terminamos aquí.
-     */
-    if (
-        anteriores.length === 0
-    ) {
-
-        especieActual.species_models =
-            [
-                nuevoModelo
-            ];
-
-
-        input.value =
-            "";
-
-
-        await renderizarModelo();
-
-
-        return;
-    }
-
-
-    /* =====================================================
-       4. BORRAR REGISTROS ANTERIORES DE LA BD
-    ===================================================== */
-
-    const idsAnteriores =
-        anteriores.map(
-            modelo =>
-                modelo.id
-        );
-
-
-    const {
-        error: deleteDatabaseError
-    } = await supabase
-        .from(
-            "species_models"
+        ...(
+            especieActual
+                .species_models ||
+            []
         )
-        .delete()
-        .in(
-            "id",
-            idsAnteriores
-        );
+    ];
 
 
     /*
-     * Si no podemos eliminar el modelo anterior,
-     * hacemos rollback del nuevo.
+     * Si existía algún modelo anterior,
+     * debe sustituirse por el nuevo.
      */
     if (
-        deleteDatabaseError
+        anteriores.length > 0
     ) {
 
-        await supabase
+        const idsAnteriores =
+            anteriores.map(
+                modelo =>
+                    modelo.id
+            );
+
+
+        /* =================================================
+           4. BORRAR REGISTROS ANTERIORES
+        ================================================= */
+
+        const {
+            error: deleteDatabaseError
+        } = await supabase
             .from(
                 "species_models"
             )
             .delete()
-            .eq(
+            .in(
                 "id",
-                nuevoModelo.id
+                idsAnteriores
             );
 
 
-        await supabase.storage
-            .from(
-                "species-models"
-            )
-            .remove([
-                ruta
-            ]);
+        /*
+         * Si falla el borrado del anterior,
+         * hacemos rollback del modelo nuevo.
+         */
+        if (deleteDatabaseError) {
+
+            await supabase
+                .from(
+                    "species_models"
+                )
+                .delete()
+                .eq(
+                    "id",
+                    nuevoModelo.id
+                );
 
 
-        throw deleteDatabaseError;
-    }
+            await supabase.storage
+                .from(
+                    "species-models"
+                )
+                .remove([
+                    ruta
+                ]);
 
 
-    /* =====================================================
-       5. BORRAR ARCHIVOS ANTERIORES DE STORAGE
-    ===================================================== */
-
-    const rutasAnteriores =
-        anteriores
-            .map(
-                modelo =>
-                    modelo.ruta_archivo
-            )
-            .filter(Boolean);
+            throw deleteDatabaseError;
+        }
 
 
-    if (
-        rutasAnteriores.length >
-        0
-    ) {
+        /* =================================================
+           5. BORRAR ARCHIVOS ANTERIORES DE STORAGE
+        ================================================= */
 
-        const {
-            error: deleteStorageError
-        } = await supabase.storage
-            .from(
-                "species-models"
-            )
-            .remove(
-                rutasAnteriores
-            );
+        const rutasAnteriores =
+            anteriores
+                .map(
+                    modelo =>
+                        modelo.ruta_archivo
+                )
+                .filter(
+                    Boolean
+                );
 
 
         if (
-            deleteStorageError
+            rutasAnteriores.length > 0
         ) {
 
-            /*
-             * El nuevo modelo ya quedó correctamente
-             * registrado. Solo registramos el posible
-             * archivo huérfano para revisarlo después.
-             */
-            console.error(
-                "El modelo anterior fue retirado de la base de datos, pero no pudo eliminarse de Storage:",
-                deleteStorageError
-            );
+            const {
+                error: deleteStorageError
+            } = await supabase.storage
+                .from(
+                    "species-models"
+                )
+                .remove(
+                    rutasAnteriores
+                );
+
+
+            if (deleteStorageError) {
+
+                console.error(
+                    "El modelo anterior fue retirado de la base de datos, pero no pudo eliminarse de Storage:",
+                    deleteStorageError
+                );
+            }
         }
     }
 
@@ -1448,10 +1366,9 @@ async function sustituirModeloSiCorresponde() {
        6. ACTUALIZAR INTERFAZ
     ===================================================== */
 
-    especieActual.species_models =
-        [
-            nuevoModelo
-        ];
+    especieActual.species_models = [
+        nuevoModelo
+    ];
 
 
     input.value =
@@ -1460,6 +1377,7 @@ async function sustituirModeloSiCorresponde() {
 
     await renderizarModelo();
 }
+
 
 /* =========================================================
    ELIMINAR MODELO 3D ACTUAL
@@ -1508,11 +1426,14 @@ async function eliminarModeloActual() {
                 modelo =>
                     modelo.ruta_archivo
             )
-            .filter(Boolean);
+            .filter(
+                Boolean
+            );
 
 
     /*
-     * Primero quitamos las referencias de la BD.
+     * Primero se eliminan las referencias
+     * de la base de datos.
      */
     const {
         error: databaseError
@@ -1527,9 +1448,7 @@ async function eliminarModeloActual() {
         );
 
 
-    if (
-        databaseError
-    ) {
+    if (databaseError) {
 
         console.error(
             databaseError
@@ -1546,11 +1465,10 @@ async function eliminarModeloActual() {
 
 
     /*
-     * Después eliminamos los archivos físicos.
+     * Después se elimina el archivo físico.
      */
     if (
-        rutas.length >
-        0
+        rutas.length > 0
     ) {
 
         const {
@@ -1564,9 +1482,7 @@ async function eliminarModeloActual() {
             );
 
 
-        if (
-            storageError
-        ) {
+        if (storageError) {
 
             console.error(
                 "No fue posible eliminar el archivo de Storage:",
@@ -1587,3 +1503,302 @@ async function eliminarModeloActual() {
         "El modelo 3D fue eliminado."
     );
 }
+
+
+/* =========================================================
+   VALIDAR IMAGEN
+========================================================= */
+
+function validarImagen(
+    archivo
+) {
+
+    const permitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+
+    if (
+        !permitidos.includes(
+            archivo.type
+        )
+    ) {
+
+        throw new Error(
+            "Tipo de imagen no permitido."
+        );
+    }
+
+
+    if (
+        archivo.size >
+        10 * 1024 * 1024
+    ) {
+
+        throw new Error(
+            "Una imagen supera los 10 MB."
+        );
+    }
+}
+
+
+/* =========================================================
+   VALIDAR MODELO 3D
+========================================================= */
+
+function validarModelo(
+    archivo
+) {
+
+    const extension =
+        obtenerExtension(
+            archivo.name
+        );
+
+
+    if (
+        ![
+            "glb",
+            "gltf"
+        ].includes(
+            extension
+        )
+    ) {
+
+        throw new Error(
+            "El modelo debe ser un archivo GLB o GLTF."
+        );
+    }
+
+
+    const maximo =
+        100 * 1024 * 1024;
+
+
+    if (
+        archivo.size >
+        maximo
+    ) {
+
+        throw new Error(
+            "El modelo 3D supera los 100 MB."
+        );
+    }
+}
+
+
+/* =========================================================
+   OBTENER EXTENSIÓN
+========================================================= */
+
+function obtenerExtension(
+    nombre
+) {
+
+    return nombre
+        .split(".")
+        .pop()
+        .toLowerCase();
+}
+
+
+/* =========================================================
+   OBTENER VALOR DE UN CAMPO
+========================================================= */
+
+function valor(
+    id
+) {
+
+    return document
+        .querySelector(
+            `#${id}`
+        )
+        .value
+        .trim();
+}
+
+
+/* =========================================================
+   ASIGNAR VALOR A UN CAMPO
+========================================================= */
+
+function asignar(
+    id,
+    valorAsignado
+) {
+
+    const elemento =
+        document.querySelector(
+            `#${id}`
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    elemento.value =
+        valorAsignado ||
+        "";
+}
+
+
+/* =========================================================
+   MOSTRAR MENSAJE
+========================================================= */
+
+function mostrarMensaje(
+    texto,
+    error = false
+) {
+
+    if (!mensaje) {
+        return;
+    }
+
+
+    mensaje.textContent =
+        texto;
+
+
+    mensaje.className =
+        error
+            ? "form-message error"
+            : "form-message success";
+}
+
+
+/* =========================================================
+   BLOQUEAR BOTONES
+========================================================= */
+
+function bloquearBotones(
+    bloquear
+) {
+
+    const guardarCorrecciones =
+        document.querySelector(
+            "#guardar-correcciones"
+        );
+
+
+    const reenviarRevision =
+        document.querySelector(
+            "#reenviar-revision"
+        );
+
+
+    if (
+        guardarCorrecciones
+    ) {
+
+        guardarCorrecciones.disabled =
+            bloquear;
+    }
+
+
+    if (
+        reenviarRevision
+    ) {
+
+        reenviarRevision.disabled =
+            bloquear;
+    }
+}
+
+
+/* =========================================================
+   CONFIGURAR BOTONES
+========================================================= */
+
+function configurarBotones() {
+
+    const guardarCorrecciones =
+        document.querySelector(
+            "#guardar-correcciones"
+        );
+
+
+    const reenviarRevision =
+        document.querySelector(
+            "#reenviar-revision"
+        );
+
+
+    /*
+     * Tu HTML anterior tenía dos botones:
+     *
+     * - Guardar correcciones
+     * - Reenviar a revisión
+     *
+     * Ahora ya no necesitamos dos acciones distintas.
+     *
+     * Si existen ambos botones ocultamos el primero
+     * y dejamos únicamente el de reenviar.
+     */
+    if (
+        guardarCorrecciones &&
+        reenviarRevision
+    ) {
+
+        guardarCorrecciones.classList.add(
+            "hidden"
+        );
+    }
+
+
+    /*
+     * Elegimos el botón disponible.
+     */
+    const botonPrincipal =
+        reenviarRevision ||
+        guardarCorrecciones;
+
+
+    if (!botonPrincipal) {
+        return;
+    }
+
+
+    /*
+     * Evitamos que el botón envíe el formulario
+     * de forma tradicional.
+     */
+    botonPrincipal.type =
+        "button";
+
+
+    botonPrincipal.textContent =
+        "Guardar cambios y enviar a revisión";
+
+
+    botonPrincipal.addEventListener(
+        "click",
+        guardar
+    );
+}
+
+
+/* =========================================================
+   EVITAR ENVÍO NATIVO DEL FORMULARIO
+========================================================= */
+
+formulario?.addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+    }
+);
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+iniciar();
