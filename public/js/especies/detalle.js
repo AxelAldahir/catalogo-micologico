@@ -47,6 +47,10 @@ async function cargarEspecie() {
     }
 
 
+    /* =====================================================
+       OBTENER INFORMACIÓN DE LA ESPECIE
+    ===================================================== */
+
     const {
         data: especie,
         error
@@ -98,14 +102,54 @@ async function cargarEspecie() {
     }
 
 
+    /* =====================================================
+       OBTENER NOMBRE DEL INVESTIGADOR
+    ===================================================== */
+
+    const {
+        data: nombreInvestigador,
+        error: errorInvestigador
+    } = await supabase.rpc(
+        "obtener_investigador_especie",
+        {
+            p_especie_id:
+                especie.id
+        }
+    );
+
+
+    if (
+        errorInvestigador
+    ) {
+
+        console.error(
+            "Error al obtener el investigador:",
+            errorInvestigador
+        );
+    }
+
+
+    /* =====================================================
+       ACTUALIZAR TÍTULO
+    ===================================================== */
+
     document.title =
         `${especie.nombre_cientifico} | Catálogo Micológico`;
 
 
+    /* =====================================================
+       MOSTRAR INFORMACIÓN
+    ===================================================== */
+
     llenarInformacion(
-        especie
+        especie,
+        nombreInvestigador
     );
 
+
+    /* =====================================================
+       CARGAR MULTIMEDIA
+    ===================================================== */
 
     await Promise.all([
 
@@ -126,7 +170,8 @@ async function cargarEspecie() {
 ========================================================= */
 
 function llenarInformacion(
-    especie
+    especie,
+    nombreInvestigador
 ) {
 
     document.querySelector(
@@ -236,7 +281,8 @@ function llenarInformacion(
     document.querySelector(
         "#investigador"
     ).textContent =
-        "Investigador registrado";
+        nombreInvestigador ||
+        "Investigador no disponible";
 }
 
 
@@ -429,6 +475,7 @@ async function cargarModelo(
         !modelos ||
         modelos.length === 0
     ) {
+
         return;
     }
 
@@ -513,7 +560,6 @@ function mostrarError(
 
         visor.innerHTML =
             "";
-
     }
 }
 
